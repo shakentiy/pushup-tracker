@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>100 → 400 отжиманий</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: #f5f4f0; color: #1a1a1a; font-family: -apple-system, Helvetica, Arial, sans-serif; font-size: 14px; padding-bottom: 60px; }
+.hd { background: #fff; padding: 52px 18px 20px; border-bottom: 1px solid #ebebea; }
+.hd-label { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #a3a3a3; margin-bottom: 8px; }
+.hd-title { font-size: 40px; font-weight: 800; letter-spacing: -.04em; line-height: 1; color: #111; }
+.hd-title .g { color: #16a34a; }
+.hd-sub { font-size: 13px; color: #6b7280; margin-top: 6px; }
+.stats { display: -webkit-flex; display: flex; gap: 8px; padding: 14px 14px 0; }
+.stat { -webkit-flex: 1; flex: 1; background: #fff; border: 1px solid #ebebea; border-radius: 14px; padding: 12px 8px; text-align: center; }
+.stat-n { font-size: 24px; font-weight: 800; letter-spacing: -.03em; display: block; color: #111; }
+.stat-n.g { color: #16a34a; }
+.stat-l { font-size: 10px; color: #a3a3a3; text-transform: uppercase; letter-spacing: .08em; display: block; margin-top: 2px; }
+.prog { padding: 12px 14px 0; }
+.prog-row { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; font-size: 11px; color: #6b7280; margin-bottom: 6px; }
+.prog-bg { background: #e5e5e0; border-radius: 100px; height: 6px; overflow: hidden; }
+.prog-fill { background: #16a34a; height: 6px; border-radius: 100px; width: 0%; -webkit-transition: width 0.4s; transition: width 0.4s; }
+.next-box { margin: 12px 14px 0; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 13px 15px; display: none; }
+.next-label { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #16a34a; margin-bottom: 4px; }
+.next-main { font-size: 14px; font-weight: 700; color: #15803d; }
+.next-sub { font-size: 11px; color: #16a34a; margin-top: 2px; }
+.finish-box { margin: 12px 14px 0; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 20px; text-align: center; display: none; }
+.ph-hdr { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 8px; padding: 22px 14px 8px; }
+.ph-badge { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; }
+.b1 { background: #fef9c3; color: #854d0e; }
+.b2 { background: #dbeafe; color: #1e40af; }
+.b3 { background: #fae8ff; color: #6b21a8; }
+.b4 { background: #fef2f2; color: #991b1b; }
+.ph-name { font-size: 14px; font-weight: 700; }
+.ph-weeks { font-size: 11px; color: #a3a3a3; margin-left: auto; }
+.cards { padding: 0 14px; }
+.card { background: #fff; border: 1px solid #ebebea; border-radius: 13px; margin-bottom: 6px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 11px; padding: 12px 13px; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.card.done { background: #f0fdf4; border-color: #bbf7d0; }
+.chk { width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid #d1d5db; background: #fff; -webkit-flex-shrink: 0; flex-shrink: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 13px; color: transparent; font-weight: 900; }
+.card.done .chk { background: #16a34a; border-color: #16a34a; color: #fff; }
+.card-info { -webkit-flex: 1; flex: 1; min-width: 0; }
+.card-top { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 5px; margin-bottom: 2px; }
+.card-week { font-size: 10px; color: #a3a3a3; }
+.card-day { font-size: 13px; font-weight: 600; }
+.card.done .card-day { color: #15803d; }
+.card-proto { font-size: 12px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card.done .card-proto { color: #16a34a; }
+.card-right { text-align: right; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.card-total { font-size: 18px; font-weight: 800; letter-spacing: -.02em; color: #111; }
+.card.done .card-total { color: #15803d; }
+.card-type { font-size: 10px; color: #a3a3a3; margin-top: 2px; }
+.card.done .card-type { color: #16a34a; }
+.rest { background: #fff; border: 1px solid #ebebea; border-radius: 13px; margin-bottom: 6px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 11px; padding: 12px 13px; cursor: pointer; -webkit-user-select: none; user-select: none; opacity: .55; }
+.rest.done { background: #eff6ff; border-color: #bfdbfe; opacity: 1; }
+.rest .chk { width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid #d1d5db; background: #fff; -webkit-flex-shrink: 0; flex-shrink: 0; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 13px; color: transparent; font-weight: 900; }
+.rest.done .chk { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.rest .card-info { -webkit-flex: 1; flex: 1; min-width: 0; }
+.rest .card-top { display: -webkit-flex; display: flex; gap: 5px; margin-bottom: 2px; }
+.rest .card-week { font-size: 10px; color: #a3a3a3; }
+.rest .card-day { font-size: 13px; font-weight: 600; color: #6b7280; }
+.rest.done .card-day { color: #1d4ed8; }
+.rest .card-proto { font-size: 12px; color: #a3a3a3; }
+.rest.done .card-proto { color: #3b82f6; }
+.rest .card-right { font-size: 13px; color: #a3a3a3; }
+.rest.done .card-right { color: #3b82f6; }
+.toast { position: fixed; bottom: 28px; left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%); background: #111; color: #fff; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 100px; opacity: 0; pointer-events: none; -webkit-transition: opacity 0.2s; transition: opacity 0.2s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-label">Программа · 20 недель</div>
+  <div class="hd-title">100 → <span class="g">400</span></div>
+  <div class="hd-sub">Нажми на день — отметь выполненным</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="stat-n g" id="s-done">0</span><span class="stat-l">выполнено</span></div>
+  <div class="stat"><span class="stat-n" id="s-streak">0</span><span class="stat-l">подряд</span></div>
+  <div class="stat"><span class="stat-n" id="s-pct">0%</span><span class="stat-l">прогресс</span></div>
+</div>
+
+<div class="prog">
+  <div class="prog-row"><span>Прогресс</span><span id="prog-label">0 / 0</span></div>
+  <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="next-box" id="next-box">
+  <div class="next-label">Следующий день</div>
+  <div class="next-main" id="next-main">—</div>
+  <div class="next-sub" id="next-sub">—</div>
+</div>
+
+<div class="finish-box" id="finish-box">
+  <div style="font-size:34px;margin-bottom:8px">🏆</div>
+  <div style="font-size:17px;font-weight:800;color:#15803d">Программа завершена!</div>
+  <div style="font-size:12px;color:#16a34a;margin-top:4px">400 отжиманий в день — ты легенда</div>
+</div>
+
+<div id="root"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var KEY = 'pu8';
+var saved = {};
+try { var r = localStorage.getItem(KEY); if (r) saved = JSON.parse(r); } catch(e) {}
+function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch(e) {} }
+
+var D = [
+  // ФАЗА 1: нед 1-4, база 100/день
+  [0,'p1',1,'Понедельник','5 \xd7 20',100,'Стандартные'],
+  [1,'p1',1,'Вторник','4 \xd7 25',100,'Стандартные'],
+  [2,'p1',1,'Среда','Отдых',0,''],
+  [3,'p1',1,'Четверг','5 \xd7 20',100,'Стандартные'],
+  [4,'p1',1,'Пятница','4 \xd7 25',100,'Стандартные'],
+  [5,'p1',1,'Суббота','10 \xd7 10',100,'Тест'],
+  [6,'p1',1,'Воскресенье','Полный отдых',0,''],
+  [7,'p1',2,'Понедельник','5 \xd7 20',100,'Широкие'],
+  [8,'p1',2,'Вторник','4 \xd7 25',100,'Стандартные'],
+  [9,'p1',2,'Среда','3 \xd7 15',45,'Узкие'],
+  [10,'p1',2,'Четверг','5 \xd7 20',100,'Широкие'],
+  [11,'p1',2,'Пятница','4 \xd7 25',100,'Стандартные'],
+  [12,'p1',2,'Суббота','10 \xd7 10',100,'Тест'],
+  [13,'p1',2,'Воскресенье','Полный отдых',0,''],
+  [14,'p1',3,'Понедельник','5 \xd7 20',100,'Стандартные'],
+  [15,'p1',3,'Вторник','4 \xd7 25',100,'Широкие'],
+  [16,'p1',3,'Среда','Отдых',0,''],
+  [17,'p1',3,'Четверг','5 \xd7 20',100,'Узкие'],
+  [18,'p1',3,'Пятница','4 \xd7 25',100,'Стандартные'],
+  [19,'p1',3,'Суббота','10 \xd7 10',100,'Тест'],
+  [20,'p1',3,'Воскресенье','Полный отдых',0,''],
+  [21,'p1',4,'Понедельник','6 \xd7 17',100,'Стандартные'],
+  [22,'p1',4,'Вторник','5 \xd7 20',100,'Широкие'],
+  [23,'p1',4,'Среда','3 \xd7 15',45,'Узкие'],
+  [24,'p1',4,'Четверг','6 \xd7 17',100,'Стандартные'],
+  [25,'p1',4,'Пятница','5 \xd7 20',100,'Широкие'],
+  [26,'p1',4,'Суббота','100 за 3-4 подхода',100,'Тест'],
+  [27,'p1',4,'Воскресенье','Полный отдых',0,''],
+  // ФАЗА 2: нед 5-8, 150-200/день
+  [28,'p2',5,'Понедельник','6 \xd7 25',150,'Широкие'],
+  [29,'p2',5,'Вторник','5 \xd7 30',150,'Узкие'],
+  [30,'p2',5,'Среда','Отдых',0,''],
+  [31,'p2',5,'Четверг','5 \xd7 30',150,'Стандартные'],
+  [32,'p2',5,'Пятница','6 \xd7 25',150,'Широкие'],
+  [33,'p2',5,'Суббота','150 за мин. подходов',150,'Тест'],
+  [34,'p2',5,'Воскресенье','Полный отдых',0,''],
+  [35,'p2',6,'Понедельник','6 \xd7 25',150,'Стандартные'],
+  [36,'p2',6,'Вторник','5 \xd7 30',150,'Широкие'],
+  [37,'p2',6,'Среда','3 \xd7 20',60,'Узкие'],
+  [38,'p2',6,'Четверг','6 \xd7 25',150,'Стандартные'],
+  [39,'p2',6,'Пятница','5 \xd7 30',150,'Узкие'],
+  [40,'p2',6,'Суббота','150 за мин. подходов',150,'Тест'],
+  [41,'p2',6,'Воскресенье','Полный отдых',0,''],
+  [42,'p2',7,'Понедельник','Утро 5x18 / Вечер 5x18',180,'Широкие'],
+  [43,'p2',7,'Вторник','Утро 4x22 / Вечер 4x23',180,'Узкие'],
+  [44,'p2',7,'Среда','Отдых',0,''],
+  [45,'p2',7,'Четверг','Утро 5x18 / Вечер 5x18',180,'Стандартные'],
+  [46,'p2',7,'Пятница','Утро 4x22 / Вечер 4x23',180,'Широкие'],
+  [47,'p2',7,'Суббота','180 за мин. подходов',180,'Тест'],
+  [48,'p2',7,'Воскресенье','Полный отдых',0,''],
+  [49,'p2',8,'Понедельник','Утро 5x20 / Вечер 5x20',200,'Стандартные'],
+  [50,'p2',8,'Вторник','Утро 4x25 / Вечер 4x25',200,'Широкие'],
+  [51,'p2',8,'Среда','4 \xd7 20',80,'Узкие'],
+  [52,'p2',8,'Четверг','Утро 5x20 / Вечер 5x20',200,'Стандартные'],
+  [53,'p2',8,'Пятница','Утро 4x25 / Вечер 4x25',200,'Узкие'],
+  [54,'p2',8,'Суббота','200 за мин. подходов',200,'Тест'],
+  [55,'p2',8,'Воскресенье','Полный отдых',0,''],
+  // ФАЗА 3: нед 9-12, 225-300/день
+  [56,'p3',9,'Понедельник','Утро 5x23 / Вечер 5x22',225,'Стандартные'],
+  [57,'p3',9,'Вторник','Утро 5x22 / Вечер 5x23',225,'Широкие'],
+  [58,'p3',9,'Среда','Отдых',0,''],
+  [59,'p3',9,'Четверг','Утро 5x23 / Вечер 5x22',225,'Узкие'],
+  [60,'p3',9,'Пятница','Утро 5x22 / Вечер 5x23',225,'Стандартные'],
+  [61,'p3',9,'Суббота','225 за мин. подходов',225,'Тест'],
+  [62,'p3',9,'Воскресенье','Полный отдых',0,''],
+  [63,'p3',10,'Понедельник','Утро 5x25 / Вечер 5x25',250,'Стандартные'],
+  [64,'p3',10,'Вторник','Утро 5x25 / Вечер 5x25',250,'Широкие'],
+  [65,'p3',10,'Среда','3 \xd7 25',75,'Узкие'],
+  [66,'p3',10,'Четверг','Утро 5x25 / Вечер 5x25',250,'Стандартные'],
+  [67,'p3',10,'Пятница','Утро 5x25 / Вечер 5x25',250,'Узкие'],
+  [68,'p3',10,'Суббота','250 за мин. подходов',250,'Тест'],
+  [69,'p3',10,'Воскресенье','Полный отдых',0,''],
+  [70,'p3',11,'Понедельник','Утро 6x23 / Вечер 6x22',270,'Широкие'],
+  [71,'p3',11,'Вторник','Утро 5x27 / Вечер 5x27',270,'Узкие'],
+  [72,'p3',11,'Среда','Отдых',0,''],
+  [73,'p3',11,'Четверг','Утро 6x23 / Вечер 6x22',270,'Стандартные'],
+  [74,'p3',11,'Пятница','Утро 5x27 / Вечер 5x27',270,'Широкие'],
+  [75,'p3',11,'Суббота','270 за мин. подходов',270,'Тест'],
+  [76,'p3',11,'Воскресенье','Полный отдых',0,''],
+  [77,'p3',12,'Понедельник','Утро 6x25 / Вечер 6x25',300,'Стандартные'],
+  [78,'p3',12,'Вторник','Утро 5x30 / Вечер 5x30',300,'Широкие'],
+  [79,'p3',12,'Среда','4 \xd7 25',100,'Узкие'],
+  [80,'p3',12,'Четверг','Утро 6x25 / Вечер 6x25',300,'Стандартные'],
+  [81,'p3',12,'Пятница','Утро 5x30 / Вечер 5x30',300,'Узкие'],
+  [82,'p3',12,'Суббота','300 за мин. подходов',300,'Тест'],
+  [83,'p3',12,'Воскресенье','Полный отдых',0,''],
+  // ФАЗА 4: нед 13-20, 325-400/день
+  [84,'p4',13,'Понедельник','Утро 7x24 / Вечер 7x23',325,'Стандартные'],
+  [85,'p4',13,'Вторник','Утро 6x27 / Вечер 6x27',325,'Широкие'],
+  [86,'p4',13,'Среда','Отдых',0,''],
+  [87,'p4',13,'Четверг','Утро 7x24 / Вечер 7x23',325,'Узкие'],
+  [88,'p4',13,'Пятница','Утро 6x27 / Вечер 6x27',325,'Стандартные'],
+  [89,'p4',13,'Суббота','325 за мин. подходов',325,'Тест'],
+  [90,'p4',13,'Воскресенье','Полный отдых',0,''],
+  [91,'p4',14,'Понедельник','Утро 7x25 / Вечер 7x25',350,'Стандартные'],
+  [92,'p4',14,'Вторник','Утро 6x29 / Вечер 6x30',350,'Широкие'],
+  [93,'p4',14,'Среда','4 \xd7 30',120,'Узкие'],
+  [94,'p4',14,'Четверг','Утро 7x25 / Вечер 7x25',350,'Стандартные'],
+  [95,'p4',14,'Пятница','Утро 6x29 / Вечер 6x30',350,'Широкие'],
+  [96,'p4',14,'Суббота','350 за мин. подходов',350,'Тест'],
+  [97,'p4',14,'Воскресенье','Полный отдых',0,''],
+  [98,'p4',15,'Понедельник','Утро 8x24 / Вечер 8x24',384,'Стандартные'],
+  [99,'p4',15,'Вторник','Утро 7x27 / Вечер 7x27',378,'Широкие'],
+  [100,'p4',15,'Среда','Отдых',0,''],
+  [101,'p4',15,'Четверг','Утро 8x24 / Вечер 8x24',384,'Узкие'],
+  [102,'p4',15,'Пятница','Утро 7x27 / Вечер 7x28',378,'Стандартные'],
+  [103,'p4',15,'Суббота','380 за мин. подходов',380,'Тест'],
+  [104,'p4',15,'Воскресенье','Полный отдых',0,''],
+  [105,'p4',16,'Понедельник','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [106,'p4',16,'Вторник','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [107,'p4',16,'Среда','4 \xd7 35',140,'Узкие'],
+  [108,'p4',16,'Четверг','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [109,'p4',16,'Пятница','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [110,'p4',16,'Суббота','400 за мин. подходов',400,'Тест'],
+  [111,'p4',16,'Воскресенье','Полный отдых',0,''],
+  [112,'p4',17,'Понедельник','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [113,'p4',17,'Вторник','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [114,'p4',17,'Среда','Отдых',0,''],
+  [115,'p4',17,'Четверг','Утро 8x25 / Вечер 8x25',400,'Узкие'],
+  [116,'p4',17,'Пятница','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [117,'p4',17,'Суббота','400 за мин. подходов',400,'Тест'],
+  [118,'p4',17,'Воскресенье','Полный отдых',0,''],
+  [119,'p4',18,'Понедельник','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [120,'p4',18,'Вторник','Утро 8x25 / Вечер 8x25',400,'Узкие'],
+  [121,'p4',18,'Среда','4 \xd7 35',140,'Стандартные'],
+  [122,'p4',18,'Четверг','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [123,'p4',18,'Пятница','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [124,'p4',18,'Суббота','400 за мин. подходов',400,'Тест'],
+  [125,'p4',18,'Воскресенье','Полный отдых',0,''],
+  [126,'p4',19,'Понедельник','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [127,'p4',19,'Вторник','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [128,'p4',19,'Среда','Отдых',0,''],
+  [129,'p4',19,'Четверг','Утро 8x25 / Вечер 8x25',400,'Узкие'],
+  [130,'p4',19,'Пятница','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [131,'p4',19,'Суббота','400 за мин. подходов',400,'Тест'],
+  [132,'p4',19,'Воскресенье','Полный отдых',0,''],
+  [133,'p4',20,'Понедельник','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [134,'p4',20,'Вторник','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [135,'p4',20,'Среда','3 \xd7 40',120,'Узкие'],
+  [136,'p4',20,'Четверг','Утро 8x25 / Вечер 8x25',400,'Стандартные'],
+  [137,'p4',20,'Пятница','Утро 8x25 / Вечер 8x25',400,'Широкие'],
+  [138,'p4',20,'Суббота','ФИНАЛ: 400 за 4-5 подходов',400,'ФИНАЛ'],
+  [139,'p4',20,'Воскресенье','Полный отдых',0,'']
+];
+
+var PH = {
+  p1: ['Фаза 1','База — 100 в день','Нед. 1–4','b1'],
+  p2: ['Фаза 2','Объём — 150–200 в день','Нед. 5–8','b2'],
+  p3: ['Фаза 3','Разгон — 225–300 в день','Нед. 9–12','b3'],
+  p4: ['Фаза 4','Пик — 325–400 в день','Нед. 13–20','b4']
+};
+
+var totalDays = D.length;
+
+function tc(tp) {
+  if (!tp) return '#d1d5db';
+  if (tp.indexOf('Широкие') !== -1) return '#3b82f6';
+  if (tp.indexOf('Узкие') !== -1) return '#8b5cf6';
+  if (tp.indexOf('Тест') !== -1 || tp.indexOf('ФИНАЛ') !== -1) return '#f97316';
+  return '#22c55e';
+}
+
+function updateUI() {
+  var n = 0;
+  for (var k in saved) { if (saved[k]) n++; }
+  document.getElementById('s-done').textContent = n;
+  var pct = Math.round(n / totalDays * 100);
+  document.getElementById('s-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = n + ' / ' + totalDays;
+  var streak = 0;
+  for (var i = 0; i < D.length; i++) {
+    if (saved[D[i][0]]) streak++;
+    else break;
+  }
+  document.getElementById('s-streak').textContent = streak;
+  var nxt = null;
+  for (var i = 0; i < D.length; i++) {
+    if (!saved[D[i][0]]) { nxt = D[i]; break; }
+  }
+  if (nxt) {
+    document.getElementById('next-box').style.display = 'block';
+    document.getElementById('finish-box').style.display = 'none';
+    document.getElementById('next-main').textContent = 'Нед ' + nxt[2] + ' \xb7 ' + nxt[3] + ' \u2014 ' + nxt[4];
+    document.getElementById('next-sub').textContent = nxt[5] ? nxt[5] + ' отжиманий \xb7 ' + nxt[6] : 'День отдыха — восстановление';
+  } else {
+    document.getElementById('next-box').style.display = 'none';
+    document.getElementById('finish-box').style.display = 'block';
+  }
+}
+
+var toastT = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show';
+  if (toastT) clearTimeout(toastT);
+  toastT = setTimeout(function() { el.className = 'toast'; }, 1600);
+}
+
+function toggle(idx) {
+  saved[idx] = !saved[idx];
+  persist();
+  var isRest = (D[idx][5] === 0);
+  var cardEl = document.getElementById('c' + idx);
+  if (saved[idx]) {
+    cardEl.className = isRest ? 'rest done' : 'card done';
+    toast(isRest ? '\u2713 Отдых засчитан!' : '\u2713 Выполнено!');
+  } else {
+    cardEl.className = isRest ? 'rest' : 'card';
+    toast('Убрано');
+  }
+  updateUI();
+}
+
+var root = document.getElementById('root');
+var curPh = '';
+var cardsEl = null;
+
+for (var i = 0; i < D.length; i++) {
+  var row = D[i];
+  var idx = row[0], ph = row[1], wk = row[2], dn = row[3], pr = row[4], tot = row[5], tp = row[6];
+  var isRest = (tot === 0);
+
+  if (ph !== curPh) {
+    curPh = ph;
+    var m = PH[ph];
+    var hdrEl = document.createElement('div');
+    hdrEl.className = 'ph-hdr';
+    hdrEl.innerHTML = '<span class="ph-badge ' + m[3] + '">' + m[0] + '</span><span class="ph-name">' + m[1] + '</span><span class="ph-weeks">' + m[2] + '</span>';
+    root.appendChild(hdrEl);
+    cardsEl = document.createElement('div');
+    cardsEl.className = 'cards';
+    root.appendChild(cardsEl);
+  }
+
+  var cardEl = document.createElement('div');
+  cardEl.id = 'c' + idx;
+
+  if (isRest) {
+    cardEl.className = 'rest' + (saved[idx] ? ' done' : '');
+    cardEl.innerHTML = '<div class="chk">\u2713</div><div class="card-info"><div class="card-top"><span class="card-week">Нед ' + wk + '</span><span class="card-day">' + dn + '</span></div><div class="card-proto">' + pr + '</div></div><div class="card-right">\u2014</div>';
+  } else {
+    cardEl.className = 'card' + (saved[idx] ? ' done' : '');
+    cardEl.innerHTML = '<div class="chk">\u2713</div><div class="card-info"><div class="card-top"><span class="card-week">Нед ' + wk + '</span><span class="card-day">' + dn + '</span></div><div class="card-proto">' + pr + '</div></div><div class="card-right"><div class="card-total">' + tot + '</div><div class="card-type"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:' + tc(tp) + ';vertical-align:middle;margin-right:3px"></span>' + tp + '</div></div>';
+  }
+
+  cardEl.setAttribute('onclick', 'toggle(' + idx + ')');
+  cardsEl.appendChild(cardEl);
+}
+
+updateUI();
+</script>
+</body>
+</html>
