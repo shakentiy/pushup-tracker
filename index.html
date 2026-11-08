@@ -368,6 +368,20 @@ html.dk .tb.on { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px 0
   .today, .tcard, .stat, .sec, .st-card, .day, .rest, .tabbar, .mini-hd { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .panel, .fx { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+.btn.danger { background: #FF3B30; color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 6px 18px rgba(255, 59, 48, .3); }
+.cfm { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1050; display: none; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(0, 0, 0, .38); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.cfm.show { display: flex; animation: fxIn .22s cubic-bezier(.2, .8, .2, 1); }
+.cfm-box { position: relative; width: 100%; max-width: 340px; padding: 22px 20px 18px; border-radius: 28px; text-align: center; color: var(--text);
+  background: var(--panel-bg); -webkit-backdrop-filter: blur(36px) saturate(180%); backdrop-filter: blur(36px) saturate(180%);
+  border: 1px solid var(--g-line); box-shadow: 0 24px 60px rgba(0, 0, 0, .35), inset 0 1px 0 var(--g-hi); }
+.cfm-ic { width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 50%; background: rgba(255, 59, 48, .14); color: #FF3B30; font: 900 24px/46px -apple-system, system-ui, sans-serif; }
+.cfm-t { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.cfm-s { font-size: 13px; color: var(--text2); margin-top: 8px; line-height: 1.45; }
+.cfm-ck { display: flex; align-items: center; gap: 10px; text-align: left; margin-top: 16px; padding: 10px 12px; border-radius: 14px; background: var(--g-bg2); font-size: 12px; color: var(--text2); line-height: 1.35; }
+.cfm-ck input { transform: scale(.8); margin: -4px -6px; }
+.cfm-b { display: flex; gap: 10px; margin-top: 16px; }
+.cfm-b .btn { flex: 1; margin: 0; text-align: center; padding: 13px 0; }
 </style>
 </head>
 <body>
@@ -464,6 +478,12 @@ html.dk .tb.on { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px 0
 
   <div class="pn-title" id="inst-t">Установка на iPhone</div>
   <div class="sec hint" id="inst-h" style="font-size:13px;margin-top:0;color:var(--text2)">1. Открой страницу в Safari.<br>2. Кнопка «Поделиться» &rarr; «На экран Домой» &rarr; «Добавить».<br>3. Дальше открывай только с иконки: так трекер работает как приложение, без адресной строки.<br><b>Важно:</b> у иконки своя память, отдельная от Safari. Перед установкой сделай «Создать копию» в Safari, а в приложении нажми «Восстановить».</div>
+
+  <div class="pn-title">Тестирование</div>
+  <div class="sec">
+    <div class="btn danger" onclick="cfmOpen()">Сбросить прогресс</div>
+    <div class="hint">Удаляет отметки подходов, оценки, пропуски, результаты тестов и зафиксированные дни. Перед сбросом можно сделать резервную копию выше.</div>
+  </div>
 </div>
 
 <div class="panel" id="spanel"><div class="sh-hd"><span>Статистика</span><span class="sh-x" onclick="toggleStats()">&#10005;</span></div><div id="st-body"></div></div>
@@ -476,6 +496,15 @@ html.dk .tb.on { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px 0
   <div class="tb" id="tb-stats" onclick="nav('stats')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V12"/><path d="M12 20V5"/><path d="M19 20v-9"/></svg><span>Статистика</span></div>
   <div class="tb" id="tb-set" onclick="nav('set')"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Настройки</span></div>
 </nav>
+<div class="cfm" id="cfm" onclick="if(event.target===this)cfmClose()">
+  <div class="cfm-box">
+    <div class="cfm-ic">!</div>
+    <div class="cfm-t">Сбросить прогресс?</div>
+    <div class="cfm-s">Все отметки, оценки, пропуски и результаты тестов будут удалены. Отменить это нельзя.</div>
+    <label class="cfm-ck"><input type="checkbox" id="cfm-full"><span>Полный сброс: удалить также вес и все настройки, как при первом запуске</span></label>
+    <div class="cfm-b"><div class="btn alt" onclick="cfmClose()">Отмена</div><div class="btn danger" onclick="doReset()">Сбросить</div></div>
+  </div>
+</div>
 <div class="fx" id="fx"></div>
 <div class="toast" id="toast"></div>
 
@@ -944,7 +973,7 @@ var REASONS = ['Болезнь', 'Нет времени', 'Усталость', 
 var skI = -1, skR = '';
 function skOpen(i) { skI = i; skR = ''; skRender(); el('skp').className = 'panel open'; el('skp').scrollTop = 0; lockBody(); }
 function skClose() { closeP('skp'); skI = -1; lockBody(); }
-function skPick(k) { var c = el('sk-c') ? el('sk-c').value : ''; skR = REASONS[k]; skRender(); el('sk-c').value = c; }
+function skPick(k) { if (skI < 0) return; var c = el('sk-c') ? el('sk-c').value : ''; skR = REASONS[k]; skRender(); el('sk-c').value = c; }
 function skRender() {
   var i = skI, h = '<div class="sec"><div class="today-main" style="color:inherit">' + dayName(i) + ' · ' + fmt(dateOf(i)) + '</div><div class="hint">Неделя ' + D[i][2] + '</div></div>';
   h += '<div class="sec"><div class="pn-title">Причина</div><div class="chips">';
@@ -957,6 +986,7 @@ function skRender() {
   el('sk-body').innerHTML = h;
 }
 function skSave() {
+  if (skI < 0) return;
   if (!skR) { toast('Выбери причину'); return; }
   var i = skI;
   saved['sk_' + i] = { r: skR, c: (el('sk-c').value || '').slice(0, 300), t: Date.now() };
@@ -1079,9 +1109,11 @@ function celebrate() {
 function persistSaved() { store(KEY, saved); refreshBkNote(); }
 function tg(i, ex, b, s) {
   var key = i + '_' + ex + '_' + b + '_' + s, node = el('s' + key);
-  if (saved[key]) { delete saved[key]; node.className = 'set-btn'; unfreezeIfEmpty(i); }
+  // подход должен существовать в текущем плане дня (кнопка могла устареть после пересчёта)
+  if (keysOf(i, exBy(ex)).indexOf(key) < 0) { if (!saved[key]) return; }
+  if (saved[key]) { delete saved[key]; if (node) node.className = 'set-btn'; unfreezeIfEmpty(i); }
   else {
-    saved[key] = 1; node.className = 'set-btn on-' + ex; freeze(i);
+    saved[key] = 1; if (node) node.className = 'set-btn on-' + ex; freeze(i);
     var ee = exBy(ex);
     if (cfg.superset && ex === 'pu') { var sk2 = keysOf(i, exBy('sq')), left = false; for (var z = 0; z < sk2.length; z++) if (!saved[sk2[z]]) left = true; if (left) toast('Теперь сразу приседания'); else startTimer(ee); }
     else if (cfg.superset && ex === 'sq') startTimer(ee, pairRest(), 'Отдых после пары');
@@ -1191,6 +1223,7 @@ function fTick() {
   var b = el('fx-big'); if (b) b.textContent = fmtSec(left);
 }
 function fDone() {
+  if (!fx) return;
   var j = fCur(); if (j < 0) return;
   var it = fx.list[j];
   saved[it.key] = 1; freeze(fx.i);
@@ -1201,8 +1234,11 @@ function fDone() {
   else fx.st = 'set';
   fRender();
 }
-function fSkip() { var j = fCur(); if (j >= 0) fx.skip[fx.list[j].key] = 1; fx.st = 'set'; fRender(); }
-function fPlank() { var it = fx.list[fCur()]; fx.st = 'plank'; fx.end = Date.now() + it.v * 1000; fRender(); }
+function fToSet() { if (!fx) return; fx.st = 'set'; fRender(); }
+function fAdd15() { if (!fx) return; fx.end += 15000; fTick(); }
+function fRetry() { if (!fx) return; fx.skip = {}; fx.st = 'set'; fRender(); }
+function fSkip() { if (!fx) return; var j = fCur(); if (j >= 0) fx.skip[fx.list[j].key] = 1; fx.st = 'set'; fRender(); }
+function fPlank() { if (!fx || fCur() < 0) return; var it = fx.list[fCur()]; fx.st = 'plank'; fx.end = Date.now() + it.v * 1000; fRender(); }
 function fRender() {
   if (!fx) return;
   var L = fx.list, done = 0, j = fCur(), h, k;
@@ -1212,7 +1248,7 @@ function fRender() {
     var all = done === L.length;
     h += '<div class="fx-mid"><div style="font-size:64px">' + (all ? '&#127881;' : '&#9995;') + '</div><div class="fx-ex" style="margin-top:12px">' + (all ? 'Тренировка завершена' : 'Остались пропущенные подходы') + '</div>' +
       '<div class="fx-set">' + dayName(fx.i) + ' · неделя ' + D[fx.i][2] + '</div>' + (all ? rateHtml(fx.i) : '') + '</div>' +
-      '<div class="fx-btns">' + (all ? '' : '<div class="fx-main" style="background:var(--text);color:var(--bg)" onclick="fx.skip={};fx.st=\'set\';fRender()">Вернуться к пропущенным</div>') +
+      '<div class="fx-btns">' + (all ? '' : '<div class="fx-main" style="background:var(--text);color:var(--bg)" onclick="fRetry()">Вернуться к пропущенным</div>') +
       '<div class="fx-main" style="background:var(--accent);color:var(--on-accent)" onclick="fClose()">Готово</div></div>';
   } else {
     var it = L[j], e = it.e, tot = 0;
@@ -1221,12 +1257,12 @@ function fRender() {
     if (fx.st === 'rest') {
       h += '<div class="fx-mid"><div class="fx-ex" style="color:var(--text3)">' + (fx.pairRest ? 'Отдых после пары' : 'Отдых') + '</div><div class="fx-big" id="fx-big">' + fmtSec(Math.max(0, Math.ceil((fx.end - Date.now()) / 1000))) + '</div>' +
         '<div class="fx-next">Дальше: <b style="color:' + e.ink + '">' + e.name + '</b> · ' + (it.max ? 'максимум' : it.v + (e.unit ? ' сек' : ' раз')) + '</div></div>' +
-        '<div class="fx-btns"><div class="fx-main" style="background:' + e.color + '" onclick="fx.st=\'set\';fRender()">Пропустить отдых</div>' +
-        '<div class="fx-sec" onclick="fx.end+=15000;fTick()">+15 секунд</div></div>';
+        '<div class="fx-btns"><div class="fx-main" style="background:' + e.color + '" onclick="fToSet()">Пропустить отдых</div>' +
+        '<div class="fx-sec" onclick="fAdd15()">+15 секунд</div></div>';
     } else if (fx.st === 'plank') {
       h += '<div class="fx-mid"><div class="fx-ex" style="color:' + e.ink + '">Планка</div><div class="fx-set">Держи! Подход ' + it.n + ' из ' + tot + '</div>' +
         '<div class="fx-big" id="fx-big" style="color:' + e.ink + '">' + fmtSec(Math.max(0, Math.ceil((fx.end - Date.now()) / 1000))) + '</div></div>' +
-        '<div class="fx-btns"><div class="fx-main" style="background:' + e.color + '" onclick="fDone()">Закончил раньше</div><div class="fx-sec" onclick="fx.st=\'set\';fRender()">Отмена</div></div>';
+        '<div class="fx-btns"><div class="fx-main" style="background:' + e.color + '" onclick="fDone()">Закончил раньше</div><div class="fx-sec" onclick="fToSet()">Отмена</div></div>';
     } else {
       var vr = (e.k === 'pu') ? ' · ' + String(D[fx.i][7]).replace(' (deload)', '').toLowerCase() : '';
       h += '<div class="fx-mid"><div class="fx-ex" style="color:' + e.ink + '">' + e.name + vr + '</div><div class="fx-set">Подход ' + it.n + ' из ' + tot + '</div>' +
@@ -1421,7 +1457,9 @@ function makeIcs() {
   var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   try {
     var blob = new Blob([r.text], { type: 'text/calendar;charset=utf-8' }), u = URL.createObjectURL(blob);
-    if (ios) { window.location.href = u; } // iOS сам откроет окно «Добавить все» в Календарь
+    if (ios) { // iOS откроет окно «Добавить все» в Календарь; новое окно не уводит со страницы трекера
+      var w = window.open(u, '_blank'); if (!w) window.location.href = u;
+    }
     else {
       var a = document.createElement('a');
       a.href = u; a.download = 'trenirovki.ics'; document.body.appendChild(a); a.click();
@@ -1610,7 +1648,7 @@ function makeBackup() {
   t.value = JSON.stringify({ v: 2, saved: saved, cfg: cfg, meas: meas, plans: plans });
   t.focus(); t.select();
   try { if (t.setSelectionRange) t.setSelectionRange(0, 999999); } catch (e) {}
-  try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value); } catch (e) {}
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { var cp = navigator.clipboard.writeText(t.value); if (cp && cp.then) cp.then(null, function () {}); } } catch (e) {}
   toast('Копия готова — скопируй текст');
 }
 function refreshBkNote() {
@@ -1622,6 +1660,20 @@ function refreshBkNote() {
   var bl = el('bk-last'); if (bl) bl.textContent = last ? 'Последняя копия: ' + new Date(last).getDate() + ' ' + MON[new Date(last).getMonth()] : 'Копия ещё не создавалась';
   var standalone = false; try { standalone = !!window.navigator.standalone; } catch (e) {}
   var ih = el('inst-h'), it = el('inst-t'); if (ih) { ih.style.display = standalone ? 'none' : ''; it.style.display = standalone ? 'none' : ''; }
+}
+/* ---------- сброс прогресса (для тестирования) ---------- */
+function cfmOpen() { el('cfm-full').checked = false; el('cfm').className = 'cfm show'; }
+function cfmClose() { el('cfm').className = 'cfm'; }
+function doReset() {
+  var full = el('cfm-full').checked;
+  saved = {}; plans = {}; ringPrev = {};
+  if (cfg.tests) delete cfg.tests;
+  if (full) { meas = []; cfg = {}; ensureCfg(); }
+  store(KEY, saved); store(PKEY, plans); store(CKEY, cfg); store(MKEY, meas);
+  cfmClose(); hideTimer();
+  el('panel').className = 'panel'; el('spanel').className = 'panel'; el('skp').className = 'panel';
+  applyTheme(); render(); showScreen('today'); window.scrollTo(0, 0);
+  toast(full ? 'Всё сброшено — как при первом запуске' : 'Прогресс сброшен');
 }
 function restoreBackup() {
   var o;
