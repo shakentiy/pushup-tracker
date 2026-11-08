@@ -285,10 +285,94 @@ html.dk .toast { background: rgba(245, 245, 247, .94); color: #0B0B0D; }
 .mini-hd.show { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .enter, .panel.open, .fx.show, .pop, .t-rings.glow, .t-done, .today { animation: none !important; } .ring { transition: none; } }
 input[type=time], select { font: 600 16px -apple-system, system-ui, sans-serif; border: none; border-radius: 12px; padding: 10px 12px; background: var(--surface2); color: var(--text); outline: none; -webkit-appearance: none; appearance: none; min-height: 42px; }
+
+/* ===== Liquid Glass ===== */
+:root {
+  --g-bg: rgba(255, 255, 255, .52); --g-bg2: rgba(255, 255, 255, .42); --g-line: rgba(255, 255, 255, .75); --g-hi: rgba(255, 255, 255, .95);
+  --g-edge: rgba(0, 0, 0, .06); --g-shadow: 0 10px 30px rgba(40, 45, 70, .09), 0 1px 2px rgba(0, 0, 0, .04);
+  --amb1: rgba(190, 240, 40, .42); --amb2: rgba(60, 205, 245, .34); --amb3: rgba(255, 120, 60, .26);
+  --panel-bg: rgba(244, 244, 248, .62); --spec: rgba(255, 255, 255, .9);
+}
+html.dk {
+  --g-bg: rgba(255, 255, 255, .06); --g-bg2: rgba(255, 255, 255, .075); --g-line: rgba(255, 255, 255, .13); --g-hi: rgba(255, 255, 255, .22);
+  --g-edge: rgba(0, 0, 0, .35); --g-shadow: 0 12px 36px rgba(0, 0, 0, .45);
+  --amb1: rgba(198, 244, 50, .17); --amb2: rgba(61, 214, 245, .14); --amb3: rgba(255, 106, 43, .13);
+  --panel-bg: rgba(12, 12, 15, .58); --spec: rgba(255, 255, 255, .42);
+}
+/* живая цветная подсветка за стеклом */
+.ambient { position: fixed; top: -15%; left: -15%; right: -15%; bottom: -15%; z-index: -1; pointer-events: none;
+  background: radial-gradient(38% 28% at 12% 8%, var(--amb1), transparent 70%), radial-gradient(34% 30% at 92% 34%, var(--amb2), transparent 70%), radial-gradient(44% 34% at 26% 82%, var(--amb3), transparent 70%);
+  animation: drift 26s ease-in-out infinite alternate; }
+@keyframes drift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(3%, -2%, 0) scale(1.06); } }
+
+/* стеклянные поверхности */
+.today, .tcard, .stat, .sec, .st-card, .day, .rest {
+  position: relative; background: var(--g-bg); border: 1px solid var(--g-line);
+  box-shadow: var(--g-shadow), inset 0 1px 0 var(--g-hi), inset 0 -1px 0 var(--g-edge); }
+.today, .tcard, .stat, .sec, .st-card { -webkit-backdrop-filter: blur(26px) saturate(180%); backdrop-filter: blur(26px) saturate(180%); }
+/* блик по краю — «жидкий» отблеск света */
+.today::before, .tcard::before, .stat::before, .sec::before, .st-card::before, .day::before, .rest::before, .tabbar::before, .t-go::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(140deg, var(--spec), rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0) 62%, var(--g-hi));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; }
+.day.istoday, .rest.istoday { box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(198, 244, 50, .25), var(--g-shadow); }
+.day.done .dchk, .rest.done .dchk { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35); }
+.day-body { border-top-color: var(--g-line); }
+.t-sets { border-top-color: var(--g-line); }
+
+/* стеклянные кнопки и «капсулы» */
+.set-btn, .all-btn, .rate span, .chips span, .wk-tools span, .sh-x, .fx-x, .go, .seg, .tag.dl-t,
+input[type=date], input[type=number], input[type=time], select, textarea {
+  background: var(--g-bg2);
+  box-shadow: inset 0 1px 0 var(--g-hi), inset 0 0 0 1px var(--g-line), 0 1px 2px rgba(0, 0, 0, .04); }
+.set-btn.on-pu, .set-btn.on-sq, .set-btn.on-pl, .rate .r1.on, .rate .r2.on, .rate .r3.on, .chips span.on {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -2px 6px rgba(0, 0, 0, .12), 0 4px 14px rgba(0, 0, 0, .14); }
+.set-btn.on-pu, .set-btn.on-sq, .set-btn.on-pl { background-image: linear-gradient(180deg, rgba(255, 255, 255, .32), rgba(255, 255, 255, 0) 55%); }
+.seg span.on { background: var(--g-bg); box-shadow: inset 0 1px 0 var(--g-hi), 0 2px 8px rgba(0, 0, 0, .12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+html.dk .seg span.on { background: rgba(255, 255, 255, .14); }
+input:focus, textarea:focus { box-shadow: inset 0 1px 0 var(--g-hi), 0 0 0 3px rgba(198, 244, 50, .45); }
+
+/* главные кнопки: «капля» с глянцем */
+.t-go, .today-btn:not(.alt2), .timer.ready { position: relative; overflow: hidden;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, .05) 52%, rgba(0, 0, 0, .04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), inset 0 -2px 8px rgba(90, 130, 0, .25), 0 10px 28px rgba(150, 210, 0, .28); }
+.today-btn.alt2, .btn.alt { background: var(--g-bg2); box-shadow: inset 0 1px 0 var(--g-hi), inset 0 0 0 1px var(--g-line); }
+.btn { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 4px 14px rgba(0, 0, 0, .12); }
+.fx-main { position: relative; background-image: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0) 55%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -3px 10px rgba(0, 0, 0, .14), 0 12px 30px rgba(0, 0, 0, .22); }
+
+/* нижняя панель — главный элемент Liquid Glass */
+.tabbar { background: var(--g-bg); -webkit-backdrop-filter: blur(30px) saturate(200%); backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid var(--g-line); box-shadow: 0 16px 40px rgba(0, 0, 0, .18), inset 0 1px 0 var(--g-hi), inset 0 -1px 0 var(--g-edge); }
+html.dk .tabbar { background: rgba(40, 40, 46, .42); }
+.tb.on { background: rgba(255, 255, 255, .55); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 10px rgba(0, 0, 0, .1); }
+html.dk .tb.on { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 2px 10px rgba(0, 0, 0, .3); }
+
+/* окна-листы и режим тренировки: стекло поверх приложения */
+.panel, .fx { background: var(--panel-bg); -webkit-backdrop-filter: blur(40px) saturate(180%); backdrop-filter: blur(40px) saturate(180%); }
+.sh-hd { background: transparent; }
+.sh-hd::after { content: ''; position: absolute; left: 0; right: 0; top: 0; bottom: -12px; z-index: -1; background: var(--panel-bg); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  -webkit-mask: linear-gradient(#000 70%, transparent); mask: linear-gradient(#000 70%, transparent); }
+.mini-hd { background: var(--g-bg); -webkit-backdrop-filter: blur(30px) saturate(200%); backdrop-filter: blur(30px) saturate(200%); box-shadow: inset 0 -1px 0 var(--g-line); border-bottom: 0; }
+.timer, .toast { -webkit-backdrop-filter: blur(26px) saturate(180%); backdrop-filter: blur(26px) saturate(180%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 14px 36px rgba(0, 0, 0, .28); }
+.bk-note { -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); box-shadow: inset 0 1px 0 var(--g-hi), inset 0 0 0 1px rgba(255, 159, 10, .2); }
+.prog-bg, .fx-bar { background: var(--g-bg2); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .12); }
+.prog-fill, .fx-bar div { background-image: linear-gradient(180deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, 0)); box-shadow: 0 0 12px rgba(198, 244, 50, .45); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .today, .tcard, .stat, .sec, .st-card, .day, .rest { background: var(--surface); }
+  .panel, .fx { background: var(--bg); }
+}
+@media (prefers-reduced-motion: reduce) { .ambient { animation: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  .today, .tcard, .stat, .sec, .st-card, .day, .rest, .tabbar, .mini-hd { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .panel, .fx { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
 </style>
 </head>
 <body>
 
+<div class="ambient"></div>
 <div class="mini-hd" id="mini-hd">Сегодня</div>
 <div id="scr-today">
 <div class="hd th">
