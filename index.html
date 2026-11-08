@@ -273,16 +273,10 @@ html.dk .toast { background: rgba(245, 245, 247, .94); color: #0B0B0D; }
 .fx .rate { margin-top: 24px; width: 100%; }
 
 /* ---- анимации ---- */
-@keyframes scrIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-@keyframes sheetIn { from { opacity: 0; transform: translateY(36px) scale(.985); } to { opacity: 1; transform: none; } }
-@keyframes sheetOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(28px) scale(.985); } }
 @keyframes fxIn { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.16); } 70% { transform: scale(.96); } 100% { transform: scale(1); } }
 @keyframes glow { 0% { filter: drop-shadow(0 0 0 rgba(198, 244, 50, 0)); transform: scale(1); } 35% { filter: drop-shadow(0 0 16px rgba(198, 244, 50, .75)); transform: scale(1.05); } 100% { filter: drop-shadow(0 0 0 rgba(198, 244, 50, 0)); transform: scale(1); } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.enter { animation: scrIn .32s cubic-bezier(.2, .8, .2, 1); }
-.panel.open { animation: sheetIn .34s cubic-bezier(.2, .8, .2, 1); }
-.panel.open.closing { animation: sheetOut .18s ease-in forwards; }
 .fx.show { animation: fxIn .26s cubic-bezier(.2, .8, .2, 1); }
 .pop { animation: pop .34s cubic-bezier(.3, .7, .3, 1); }
 .t-rings.glow { animation: glow 1.1s ease-out; }
@@ -311,7 +305,6 @@ html.dk {
 .ambient { position: fixed; top: -15%; left: -15%; right: -15%; bottom: -15%; z-index: -1; pointer-events: none;
   background: radial-gradient(38% 28% at 12% 8%, var(--amb1), transparent 70%), radial-gradient(34% 30% at 92% 34%, var(--amb2), transparent 70%), radial-gradient(44% 34% at 26% 82%, var(--amb3), transparent 70%);
   animation: drift 26s ease-in-out infinite alternate; }
-@keyframes drift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(3%, -2%, 0) scale(1.06); } }
 
 /* стеклянные поверхности */
 .today, .tcard, .stat, .sec, .st-card, .day, .rest {
@@ -409,17 +402,6 @@ body { min-height: 100vh; min-height: 100dvh; transition: none; }
 .day, .rest { contain: layout paint; }
 
 /* ===== плавные переходы ===== */
-@keyframes slideInR { from { opacity: 0; transform: translate3d(28px, 0, 0); } to { opacity: 1; transform: none; } }
-@keyframes slideInL { from { opacity: 0; transform: translate3d(-28px, 0, 0); } to { opacity: 1; transform: none; } }
-@keyframes panelIn { from { opacity: 0; transform: translate3d(0, 18px, 0) scale(.985); } to { opacity: 1; transform: none; } }
-@keyframes panelOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translate3d(0, 14px, 0) scale(.99); } }
-.enter, .enterR { animation: slideInR .42s cubic-bezier(.16, 1, .3, 1) both; }
-.enterL { animation: slideInL .42s cubic-bezier(.16, 1, .3, 1) both; }
-.panel.open { animation: panelIn .4s cubic-bezier(.16, 1, .3, 1) both; }
-.panel.open.closing { animation: panelOut .22s cubic-bezier(.4, 0, 1, 1) both; }
-.panel.open.swR .sh-hd, .panel.open.swR #st-body, .panel.open.swR .pn-title, .panel.open.swR .sec { animation: slideInR .42s cubic-bezier(.16, 1, .3, 1) both; }
-.panel.open.swL .sh-hd, .panel.open.swL #st-body, .panel.open.swL .pn-title, .panel.open.swL .sec { animation: slideInL .42s cubic-bezier(.16, 1, .3, 1) both; }
-.panel.open.swR, .panel.open.swL { animation: none; }
 /* «жидкая» капсула активной вкладки */
 .tabbar { position: fixed; }
 .tb-pill { position: absolute; top: 5px; bottom: 5px; left: 0; width: 72px; border-radius: 999px; pointer-events: none; z-index: 0;
@@ -430,7 +412,6 @@ html.dk .tb-pill { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px
 .tb.on, html.dk .tb.on { background: transparent; box-shadow: none; }
 .tb svg { transition: transform .35s cubic-bezier(.34, 1.56, .64, 1); }
 .tb.on svg { transform: translateY(-1px) scale(1.08); }
-@media (prefers-reduced-motion: reduce) { .enter, .enterR, .enterL, .panel.open, .panel.open.closing { animation: none !important; } .tb-pill { transition: none; } }
 
 /* кнопки онбординга — по центру, в одну линию */
 .ob-btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; margin-top: 18px; }
@@ -441,22 +422,6 @@ html, body { overscroll-behavior: none; }
 .panel, .fx { overscroll-behavior: contain; }
 
 /* ===== переходы View Transitions: мягкое перетекание экранов ===== */
-html.vt .panel.open, html.vt .panel.open.swR, html.vt .panel.open.swL, html.vt .panel.open.closing { animation: none; }
-html.vt .panel.open.swR .sh-hd, html.vt .panel.open.swR #st-body, html.vt .panel.open.swR .pn-title, html.vt .panel.open.swR .sec,
-html.vt .panel.open.swL .sh-hd, html.vt .panel.open.swL #st-body, html.vt .panel.open.swL .pn-title, html.vt .panel.open.swL .sec { animation: none; }
-::view-transition-old(root) { animation: vtOut .26s cubic-bezier(.4, 0, .2, 1) both; }
-::view-transition-new(root) { animation: vtIn .38s cubic-bezier(.16, 1, .3, 1) both; }
-@keyframes vtOut { to { opacity: 0; transform: scale(.992); filter: blur(2px); } }
-@keyframes vtIn { from { opacity: 0; transform: scale(1.012); filter: blur(3px); } }
-.tabbar { view-transition-name: tabbar; }
-.tb-pill { view-transition-name: tbpill; }
-::view-transition-group(tabbar) { animation-duration: .3s; }
-::view-transition-old(tabbar), ::view-transition-new(tabbar) { animation: none; }
-::view-transition-old(tabbar) { display: none; }
-::view-transition-group(tbpill) { animation-duration: .55s; animation-timing-function: cubic-bezier(.34, 1.3, .5, 1); }
-::view-transition-old(tbpill), ::view-transition-new(tbpill) { animation: none; height: 100%; }
-::view-transition-old(tbpill) { display: none; }
-@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
 
 /* ===== Liquid Glass: фон только в цветах темы, но с объёмом, чтобы стекло читалось ===== */
 :root { --bg-top: #FFFFFF; --bg-mid: #F2F2F6; --bg-bot: #E6E6EC; }
@@ -509,7 +474,7 @@ html, body { height: 100%; overflow: hidden; }
 .scr { padding-bottom: calc(env(safe-area-inset-bottom) + 112px); }
 #panel, #spanel { z-index: 900; padding: 0 18px calc(env(safe-area-inset-bottom) + 112px); }
 #skp { z-index: 960; background: var(--bg); }
-.sh-hd::after { background: var(--bg-top); -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 1; -webkit-mask: linear-gradient(#000 72%, transparent); mask: linear-gradient(#000 72%, transparent); }
+.sh-hd::after { background: var(--bg-top); -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 1; -webkit-mask: linear-gradient(180deg, #000 calc(100% - 16px), transparent); mask: linear-gradient(180deg, #000 calc(100% - 16px), transparent); }
 .sh-hd { background: transparent; }
 .mini-hd { z-index: 850; }
 /* размытие внутри экранов не нужно (за карточками ровный фон) — убираем, чтобы ничего не тормозило */
@@ -517,13 +482,23 @@ html, body { height: 100%; overflow: hidden; }
 .cards { content-visibility: visible; }
 /* капсула вкладок: упругое перетекание */
 .tb-pill { transition: transform .5s cubic-bezier(.34, 1.4, .5, 1), width .5s cubic-bezier(.34, 1.4, .5, 1), opacity .2s; }
-.tabbar, .tb-pill { view-transition-name: none; }
 @media (prefers-reduced-motion: reduce) { .scr, #panel, #spanel { transition: opacity .15s linear, visibility 0s linear .15s; transform: none; } }
+
+/* ===== Dynamic Island и строка состояния ===== */
+.safe-top { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); z-index: 840; pointer-events: none;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-top) 55%, transparent 100%); }
+html:not(.dk) .safe-top { display: none; }          /* в светлой теме iOS сам рисует светлую строку состояния */
+.mini-hd { padding-top: calc(env(safe-area-inset-top) + 10px); }
+.hd { padding-top: calc(env(safe-area-inset-top) + 18px); }
+.sh-hd { padding-top: calc(env(safe-area-inset-top) + 14px); }
+.fx { padding-top: calc(env(safe-area-inset-top) + 10px); }
+@supports (padding-top: max(0px)) { .hd { padding-top: max(calc(env(safe-area-inset-top) + 18px), 30px); } .sh-hd { padding-top: max(calc(env(safe-area-inset-top) + 14px), 22px); } }
 </style>
 </head>
 <body>
 
 <div class="ambient"></div>
+<div class="safe-top"></div>
 <div class="mini-hd" id="mini-hd">Сегодня</div>
 <div id="scr-today" class="scr on">
 <div class="hd th">
@@ -1027,6 +1002,7 @@ function render() {
   updateSub();
   updAllBtn();
   refreshAll();
+  prepStats();
   doneState = {}; for (var di = 0; di < D.length; di++) doneState[di] = dayDone(di);
 }
 
@@ -1219,7 +1195,7 @@ function after(i) {
   var now = dayDone(i);
   if (doneState[i] === false && now && D[i][4] === 'D') justClosed = i;
   doneState[i] = now;
-  persistSaved(); refreshDay(i); refreshWeeks(D[i][2]); refreshStats(); refreshToday();
+  persistSaved(); refreshDay(i); refreshWeeks(D[i][2]); refreshStats(); refreshToday(); prepStats();
   if (justClosed === i) { justClosed = -1; celebrate(); }
 }
 function popKey(key) { var ids = ['s' + key, 'q' + key]; for (var k = 0; k < ids.length; k++) anim(el(ids[k]), [{ transform: 'scale(1)' }, { transform: 'scale(1.16)', offset: .35 }, { transform: 'scale(.96)', offset: .7 }, { transform: 'scale(1)' }], 340, 'cubic-bezier(.3,.7,.3,1)'); }
@@ -1759,7 +1735,11 @@ applyTheme();
 
 /* ---------- статистика ---------- */
 function toggleStats() { nav(isOpen('spanel') ? (scr === 'plan' ? 'plan' : 'home') : 'stats'); }
-var statsV = -1;
+var statsV = -1, statsT = null;
+function prepStats() { // пересчитать статистику в паузе, чтобы вкладка открывалась мгновенно
+  if (statsT) clearTimeout(statsT);
+  statsT = setTimeout(function () { statsT = null; if (statsV !== DV) renderStats(); }, 600);
+}
 function renderStats(force) {
   if (!force && statsV === DV && el('st-body').innerHTML) return;
   statsV = DV;
