@@ -494,13 +494,35 @@ html.dk .tb-pill { background: linear-gradient(180deg, rgba(255, 255, 255, .2), 
 .panel, .fx { background: linear-gradient(180deg, rgba(246, 246, 250, .72), rgba(236, 236, 242, .82));
   -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%); }
 html.dk .panel, html.dk .fx { background: linear-gradient(180deg, rgba(22, 22, 26, .7), rgba(8, 8, 10, .82)); }
+
+/* ===== вкладки-слои: плавно и без пересчётов ===== */
+html, body { height: 100%; overflow: hidden; }
+.scr, #panel, #spanel { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  display: block; opacity: 0; visibility: hidden; pointer-events: none; transform: scale(.985); transform-origin: 50% 40%;
+  transition: opacity .22s cubic-bezier(.4, 0, .2, 1), transform .4s cubic-bezier(.22, 1, .36, 1), visibility 0s linear .4s;
+  will-change: opacity, transform; animation: none !important; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.scr.on, #panel.open, #spanel.open { opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+  transition: opacity .34s cubic-bezier(.2, .8, .2, 1), transform .46s cubic-bezier(.22, 1, .36, 1), visibility 0s; }
+.scr { padding-bottom: calc(env(safe-area-inset-bottom) + 112px); }
+#panel, #spanel { z-index: 900; padding: 0 18px calc(env(safe-area-inset-bottom) + 112px); }
+#skp { z-index: 960; background: var(--bg); }
+.sh-hd::after { background: var(--bg-top); -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 1; -webkit-mask: linear-gradient(#000 72%, transparent); mask: linear-gradient(#000 72%, transparent); }
+.sh-hd { background: transparent; }
+.mini-hd { z-index: 850; }
+/* размытие внутри экранов не нужно (за карточками ровный фон) — убираем, чтобы ничего не тормозило */
+.today, .tcard, .stat, .sec, .st-card, .bk-note { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.cards { content-visibility: visible; }
+/* капсула вкладок: упругое перетекание */
+.tb-pill { transition: transform .5s cubic-bezier(.34, 1.4, .5, 1), width .5s cubic-bezier(.34, 1.4, .5, 1), opacity .2s; }
+.tabbar, .tb-pill { view-transition-name: none; }
+@media (prefers-reduced-motion: reduce) { .scr, #panel, #spanel { transition: opacity .15s linear, visibility 0s linear .15s; transform: none; } }
 </style>
 </head>
 <body>
 
 <div class="ambient"></div>
 <div class="mini-hd" id="mini-hd">Сегодня</div>
-<div id="scr-today">
+<div id="scr-today" class="scr on">
 <div class="hd th">
   <div class="hd-label" id="t-label">Сегодня</div>
   <div class="hd-title" id="t-date"></div>
@@ -523,7 +545,7 @@ html.dk .panel, html.dk .fx { background: linear-gradient(180deg, rgba(22, 22, 2
 
 </div>
 
-<div id="scr-plan" style="display:none">
+<div id="scr-plan" class="scr">
 <div class="hd">
   <div class="hd-label">План · 16 недель · ~4 месяца</div>
   <div class="hd-title"><span class="g">Отжимания</span> + <span class="o">Приседания</span> + <span class="i">Планка</span></div>
@@ -1286,16 +1308,16 @@ function allWeeks() { // одна кнопка: если хоть одна не�
   wkc = {};
   for (var w = 1; w <= 16; w++) { wkc[w] = shut; setWeek(w, shut); }
   updAllBtn();
-  if (shut) { var r = el('root'); if (r && r.getBoundingClientRect().top < 0 && r.scrollIntoView) { r.scrollIntoView(true); window.scrollBy(0, -12); } }
+  if (shut) { var L = el('scr-plan'), r = el('root'); if (L && r && r.getBoundingClientRect().top < 0) L.scrollTop = Math.max(0, r.offsetTop - 12); }
 }
 function openDay(i) {
-  if (scr !== 'plan') showScreen('plan');
+  if (active !== 'plan') { setTab('plan'); showScreen('plan'); }
   showWeek(D[i][2]); fillBody(i);
   var b = el('b' + i), a = el('a' + i);
   if (b) { b.className = 'day-body open'; a.className = 'day-arrow open'; }
   var n = el('d' + i);
-  if (n && n.scrollIntoView) n.scrollIntoView(true);
-  window.scrollBy(0, -12);
+  var L = el('scr-plan');
+  if (n && L) L.scrollTop = Math.max(0, n.getBoundingClientRect().top - L.getBoundingClientRect().top + L.scrollTop - 12);
 }
 
 
@@ -1470,11 +1492,19 @@ function beep() {
 var scr = 'today';
 var TABS = ['home', 'plan', 'stats', 'set'], curTab = 'home', navDir = 'R';
 function setTab(t) { navDir = TABS.indexOf(t) >= TABS.indexOf(curTab) ? 'R' : 'L'; curTab = t; }
+/* Все вкладки отрисованы заранее и лежат слоями. Переключение = только плавная смена прозрачности (делает видеокарта). */
+var LAYERS = { today: 'scr-today', plan: 'scr-plan', stats: 'spanel', set: 'panel' }, active = 'today';
+function activate(name) {
+  active = name;
+  for (var k in LAYERS) {
+    var n = el(LAYERS[k]), on = (k === name);
+    if (k === 'stats' || k === 'set') n.className = 'panel' + (on ? ' open' : '');
+    else n.className = 'scr' + (on ? ' on' : '');
+  }
+}
+function layerEl() { return el(LAYERS[active]); }
 function showScreen(s) {
-  var changed = scr !== s; scr = s;
-  el('scr-today').style.display = s === 'today' ? '' : 'none';
-  el('scr-plan').style.display = s === 'plan' ? '' : 'none';
-  if (changed && !vtBusy) anim(el(s === 'today' ? 'scr-today' : 'scr-plan'), [{ opacity: 0, transform: 'translate3d(' + (navDir === 'R' ? 28 : -28) + 'px,0,0)' }, { opacity: 1, transform: 'none' }], 420, 'cubic-bezier(.16,1,.3,1)');
+  scr = s; activate(s);
   lockBody(); raf(onScroll);
 }
 function raf(f) { (window.requestAnimationFrame || function (g) { setTimeout(g, 16); })(f); }
@@ -1495,32 +1525,31 @@ try { window.addEventListener('resize', function () { pillPos = null; movePill()
 function isOpen(id) { var c = el(id).className; return c.indexOf('open') >= 0 && c.indexOf('closing') < 0; }
 function closeP(id) {
   var p = el(id); if (!isOpen(id)) return;
-  if (vtBusy) { p.className = 'panel'; lockBody(); return; } // переход уже анимирует View Transitions
+  p.className = 'panel'; lockBody(); return;
   p.className = 'panel open closing';
   setTimeout(function () { if (p.className.indexOf('closing') >= 0) { p.className = 'panel'; lockBody(); } }, 220);
 }
 function onScroll() {
-  var y = window.pageYOffset || document.documentElement.scrollTop || 0, m = el('mini-hd');
+  var L = layerEl(), y = (active === 'today' || active === 'plan') && L ? L.scrollTop : 0, m = el('mini-hd');
   if (!m) return;
   var tx = scr === 'today' ? el('t-date').textContent : 'План · 16 недель', cl = 'mini-hd' + (y > 70 ? ' show' : '');
   if (m.textContent !== tx) m.textContent = tx;
   if (m.className !== cl) m.className = cl;
 }
 var scrollQ = false; function onScrollQ() { if (scrollQ) return; scrollQ = true; raf(function () { scrollQ = false; onScroll(); }); }
-try { window.addEventListener('scroll', onScrollQ, { passive: true }); } catch (e) { window.onscroll = onScrollQ; }
-function focusDay(i) { if (scr === 'today' && i === todayIdx()) { refreshToday(); window.scrollTo(0, 0); } else openDay(i); }
+try { el('scr-today').addEventListener('scroll', onScrollQ, { passive: true }); el('scr-plan').addEventListener('scroll', onScrollQ, { passive: true }); } catch (e) { el('scr-today').onscroll = onScrollQ; el('scr-plan').onscroll = onScrollQ; }
+function focusDay(i) { if (active === 'today' && i === todayIdx()) { refreshToday(); el('scr-today').scrollTop = 0; } else openDay(i); }
 function lockBody() {
   var st = isOpen('spanel'), se = isOpen('panel');
   var any = st || se || isOpen('skp');
-  document.body.className = any ? 'lock' : '';
-  el('tb-home').className = 'tb' + (!st && !se && scr === 'today' ? ' on' : '');
-  el('tb-plan').className = 'tb' + (!st && !se && scr === 'plan' ? ' on' : '');
-  el('tb-stats').className = 'tb' + (st ? ' on' : '');
-  el('tb-set').className = 'tb' + (se ? ' on' : '');
+  document.body.className = '';
+  el('tb-home').className = 'tb' + (active === 'today' ? ' on' : '');
+  el('tb-plan').className = 'tb' + (active === 'plan' ? ' on' : '');
+  el('tb-stats').className = 'tb' + (active === 'stats' ? ' on' : '');
+  el('tb-set').className = 'tb' + (active === 'set' ? ' on' : '');
   movePill();
 }
-var VT = false; try { VT = !!document.startViewTransition; } catch (e) {}
-if (VT) document.documentElement.classList.add('vt');
+var VT = false; // переключение слоями плавнее и легче, чем снимки View Transitions
 var vtBusy = false, vtPending = null;
 function nav(tab) {
   if (VT && !reduceMo) {
@@ -1535,24 +1564,16 @@ function nav(tab) {
   navNow(tab);
 }
 function navNow(tab) {
-  setTab(tab);
-  var st = isOpen('spanel'), se = isOpen('panel');
+  var name = tab === 'home' ? 'today' : tab;
   if (isOpen('skp')) skClose();
-  if (tab === 'stats') { if (!st) { toggleStats(); if (se) el('spanel').className = 'panel open sw' + navDir; } return; }
-  if (tab === 'set') { if (!se) { togglePanel(); if (st) el('panel').className = 'panel open sw' + navDir; } return; }
-  if (st) toggleStats(); if (se) togglePanel();
-  if (tab === 'home') { showScreen('today'); window.scrollTo(0, 0); return; }
-  // «План»: показать весь план и прокрутить к сегодняшнему дню
-  showScreen('plan');
-  var ti = todayIdx();
-  window.scrollTo(0, 0);
+  if (name === active) { var L = layerEl(); if (L && L.scrollTop > 0) { try { L.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { L.scrollTop = 0; } } lockBody(); return; } // повторное нажатие — наверх
+  setTab(tab);
+  if (name === 'stats') renderStats();
+  if (name === 'set') syncPanel();
+  if (name === 'today' || name === 'plan') scr = name;
+  activate(name); lockBody(); raf(onScroll);
 }
-function togglePanel() {
-  var p = el('panel'), open = isOpen('panel');
-  if (open) { closeP('panel'); lockBody(); return; }
-  p.className = 'panel open'; el('spanel').className = 'panel'; el('skp').className = 'panel';
-  syncPanel(); lockBody();
-}
+function togglePanel() { nav(isOpen('panel') ? (scr === 'plan' ? 'plan' : 'home') : 'set'); }
 function syncPanel() {
   var rm = cfg.remind || {}; el('rm-time').value = rm.time || '19:00'; el('rm-before').value = String(rm.before || 0);
   el('mx-pu').value = startMax('pu'); el('mx-sq').value = startMax('sq');
@@ -1733,12 +1754,7 @@ try { var mq = window.matchMedia('(prefers-color-scheme: dark)'); var cb = funct
 applyTheme();
 
 /* ---------- статистика ---------- */
-function toggleStats() {
-  var p = el('spanel'), open = isOpen('spanel');
-  if (open) { closeP('spanel'); lockBody(); return; }
-  p.className = 'panel open'; el('panel').className = 'panel'; el('skp').className = 'panel'; renderStats();
-  lockBody();
-}
+function toggleStats() { nav(isOpen('spanel') ? (scr === 'plan' ? 'plan' : 'home') : 'stats'); }
 var statsV = -1;
 function renderStats(force) {
   if (!force && statsV === DV && el('st-body').innerHTML) return;
@@ -1836,7 +1852,7 @@ function doReset() {
   store(KEY, saved); store(PKEY, plans); store(CKEY, cfg); store(MKEY, meas);
   cfmClose(); hideTimer();
   el('panel').className = 'panel'; el('spanel').className = 'panel'; el('skp').className = 'panel';
-  applyTheme(); render(); showScreen('today'); window.scrollTo(0, 0);
+  applyTheme(); render(); setTab('home'); showScreen('today'); el('scr-today').scrollTop = 0;
   toast(full ? 'Всё сброшено — как при первом запуске' : 'Прогресс сброшен');
 }
 function restoreBackup() {
