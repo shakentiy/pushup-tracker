@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta charset="UTF-8">
 <script>
 try { var c0 = JSON.parse(localStorage.getItem('wt_cfg') || '{}'), th0 = (c0.themeV === 2 && c0.theme) ? c0.theme : 'light';
-  if (th0 === 'dark' || (th0 === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.className = 'dk'; } catch (e) {}
+  var dk0 = th0 === 'dark' || (th0 === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  if (dk0) document.documentElement.className = 'dk';
+  // тёмная тема: прозрачная строка состояния поверх тёмного фона; светлая — обычная светлая
+  document.write('<meta name="apple-mobile-web-app-status-bar-style" id="sbs" content="' + (dk0 ? 'black-translucent' : 'default') + '">');
+} catch (e) {}
 </script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Тренировки">
 <meta name="theme-color" content="#F2F2F5" id="tc">
 <meta name="color-scheme" content="light dark">
@@ -1745,6 +1748,7 @@ function applyTheme() {
   var dark = cfg.theme === 'dark';
   if (cfg.theme === 'auto') { try { dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {} }
   var H = document.documentElement; if (dark) H.classList.add('dk'); else H.classList.remove('dk');
+  var sb = el('sbs'); if (sb) sb.setAttribute('content', dark ? 'black-translucent' : 'default');
   var tc = el('tc'); if (tc) tc.setAttribute('content', dark ? '#0B0B0D' : '#F2F2F5');
   var ids = ['auto', 'light', 'dark'];
   for (var i = 0; i < 3; i++) { var n = el('th-' + ids[i]); if (n) n.className = (cfg.theme === ids[i]) ? 'on' : ''; }
