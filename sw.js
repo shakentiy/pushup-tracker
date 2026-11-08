@@ -1,6 +1,6 @@
 /* Service worker: трекер открывается без интернета.
    Страница — «сначала сеть» (чтобы обновления приходили сами), остальное — из кэша. */
-var CACHE = 'wt-v1';
+var CACHE = 'wt-v2';
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', function (e) {
