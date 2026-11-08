@@ -382,6 +382,10 @@ html.dk .tb.on { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px 0
 .cfm-ck input { transform: scale(.8); margin: -4px -6px; }
 .cfm-b { display: flex; gap: 10px; margin-top: 16px; }
 .cfm-b .btn { flex: 1; margin: 0; text-align: center; padding: 13px 0; }
+.sets-wrap { flex-wrap: nowrap; gap: 6px; }
+.sets-wrap .set-btn { flex: 1 1 0; min-width: 0; max-width: 72px; padding: 0 2px; }
+.sets-wrap.many { gap: 4px; }
+.sets-wrap.many .set-btn { font-size: 13px; border-radius: 11px; height: 42px; letter-spacing: -.02em; }
 </style>
 </head>
 <body>
@@ -666,7 +670,7 @@ function ensureCfg() {
   if (cfg.max && !(cfg.max.pu > 0 && cfg.max.sq > 0)) delete cfg.max;
   if (cfg.tests && !isObj(cfg.tests)) delete cfg.tests;
   if (cfg.rest && !isObj(cfg.rest)) delete cfg.rest;
-  if (cfg.wkc && !isObj(cfg.wkc)) delete cfg.wkc;
+  if (cfg.wkc) delete cfg.wkc; // план при каждом запуске открывается свёрнутым
 }
 ensureCfg();
 store(CKEY, cfg);
@@ -851,7 +855,7 @@ function setsHtml(i, e, pfx) {
   var easy = (e.k === 'pu' && phaseMax('pu', +D[i][1].charAt(1) - 1) < 10) ? '<div class="hint" style="margin:-2px 0 6px">Пока максимум меньше 10 &mdash; делай от опоры (стол, скамья) или с колен.</div>' : '';
   return '<div class="ex-group"><div class="ex-label"><span class="dot" style="background:' + e.color + '"></span>' + e.name + vr +
     ' <span class="tot">' + tot + e.unit + '</span><span class="all-btn" onclick="markAll(' + i + ',\'' + e.k + '\')">все</span></div>' +
-    easy + '<div class="sets-wrap">' + h + '</div></div>';
+    easy + '<div class="sets-wrap' + (n >= 8 ? ' many' : '') + '">' + h + '</div></div>';
 }
 function render() {
   build();
@@ -1143,7 +1147,8 @@ function tgDay(i) {
   else { b.className = 'day-body open'; a.className = 'day-arrow open'; }
 }
 function curWeek() { var ti = todayIdx(); if (ti < 0) return 1; if (ti >= D.length) return 0; return D[ti][2]; }
-function wkShut(w) { var o = cfg.wkc && cfg.wkc[w]; if (o !== undefined) return o; return w !== curWeek(); }
+var wkc = {};
+function wkShut(w) { var o = wkc[w]; if (o !== undefined) return o; return true; }
 function setWeek(w, shut) {
   var c = el('wc' + w), a = el('wa' + w); if (!c) return;
   c.style.display = shut ? 'none' : ''; a.className = 'wk-arr' + (shut ? ' shut' : '');
@@ -1151,17 +1156,16 @@ function setWeek(w, shut) {
 }
 function tgWeek(w) {
   var shut = el('wc' + w).style.display !== 'none';
-  if (!cfg.wkc) cfg.wkc = {};
-  cfg.wkc[w] = shut; store(CKEY, cfg); setWeek(w, shut);
+  wkc[w] = shut; setWeek(w, shut);
 }
 function showWeek(w) { if (el('wc' + w) && el('wc' + w).style.display === 'none') setWeek(w, false); }
 function anyWeekOpen() { for (var w = 1; w <= 16; w++) { var c = el('wc' + w); if (c && c.style.display !== 'none') return true; } return false; }
 function updAllBtn() { var b = el('wk-all'); if (b) b.textContent = anyWeekOpen() ? 'Свернуть все недели' : 'Развернуть все недели'; }
 function allWeeks() { // одна кнопка: если хоть одна неделя открыта — свернуть все, иначе развернуть все
   var shut = anyWeekOpen();
-  cfg.wkc = {};
-  for (var w = 1; w <= 16; w++) { cfg.wkc[w] = shut; setWeek(w, shut); }
-  store(CKEY, cfg); updAllBtn();
+  wkc = {};
+  for (var w = 1; w <= 16; w++) { wkc[w] = shut; setWeek(w, shut); }
+  updAllBtn();
   if (shut) { var r = el('root'); if (r && r.getBoundingClientRect().top < 0 && r.scrollIntoView) { r.scrollIntoView(true); window.scrollBy(0, -12); } }
 }
 function openDay(i) {
@@ -1384,8 +1388,7 @@ function nav(tab) {
   // «План»: показать весь план и прокрутить к сегодняшнему дню
   showScreen('plan');
   var ti = todayIdx();
-  if (ti >= 0 && ti < D.length) { showWeek(D[ti][2]); var n = el('d' + ti); if (n && n.scrollIntoView) { n.scrollIntoView(true); window.scrollBy(0, -12); } }
-  else window.scrollTo(0, 0);
+  window.scrollTo(0, 0);
 }
 function togglePanel() {
   var p = el('panel'), open = isOpen('panel');
