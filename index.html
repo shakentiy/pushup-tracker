@@ -436,6 +436,64 @@ html.dk .tb-pill { background: rgba(255, 255, 255, .13); box-shadow: inset 0 1px
 .ambient { display: none; }
 html, body { overscroll-behavior: none; }
 .panel, .fx { overscroll-behavior: contain; }
+
+/* ===== переходы View Transitions: мягкое перетекание экранов ===== */
+html.vt .panel.open, html.vt .panel.open.swR, html.vt .panel.open.swL, html.vt .panel.open.closing { animation: none; }
+html.vt .panel.open.swR .sh-hd, html.vt .panel.open.swR #st-body, html.vt .panel.open.swR .pn-title, html.vt .panel.open.swR .sec,
+html.vt .panel.open.swL .sh-hd, html.vt .panel.open.swL #st-body, html.vt .panel.open.swL .pn-title, html.vt .panel.open.swL .sec { animation: none; }
+::view-transition-old(root) { animation: vtOut .26s cubic-bezier(.4, 0, .2, 1) both; }
+::view-transition-new(root) { animation: vtIn .38s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes vtOut { to { opacity: 0; transform: scale(.992); filter: blur(2px); } }
+@keyframes vtIn { from { opacity: 0; transform: scale(1.012); filter: blur(3px); } }
+.tabbar { view-transition-name: tabbar; }
+.tb-pill { view-transition-name: tbpill; }
+::view-transition-group(tabbar) { animation-duration: .3s; }
+::view-transition-old(tabbar), ::view-transition-new(tabbar) { animation: none; }
+::view-transition-old(tabbar) { display: none; }
+::view-transition-group(tbpill) { animation-duration: .55s; animation-timing-function: cubic-bezier(.34, 1.3, .5, 1); }
+::view-transition-old(tbpill), ::view-transition-new(tbpill) { animation: none; height: 100%; }
+::view-transition-old(tbpill) { display: none; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* ===== Liquid Glass: фон только в цветах темы, но с объёмом, чтобы стекло читалось ===== */
+:root { --bg-top: #FFFFFF; --bg-mid: #F2F2F6; --bg-bot: #E6E6EC; }
+html.dk { --bg-top: #1A1A1F; --bg-mid: #0E0E11; --bg-bot: #060607; }
+.ambient { display: block; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; animation: none;
+  background: radial-gradient(120% 70% at 50% -10%, var(--bg-top) 0%, var(--bg-mid) 55%, var(--bg-bot) 100%); transform: translateZ(0); will-change: transform; }
+.tabbar, .mini-hd { will-change: transform; transform: translateZ(0); }
+.tabbar { transform: translateX(-50%) translateZ(0); }
+/* стеклянные карточки: прозрачнее, с объёмом и бликом */
+.today, .tcard, .stat, .sec, .st-card, .day, .rest {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .5));
+  border-color: rgba(255, 255, 255, .9);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .03), 0 10px 30px rgba(30, 35, 60, .08), inset 0 1px 1px rgba(255, 255, 255, 1), inset 0 -10px 20px rgba(255, 255, 255, .25); }
+html.dk .today, html.dk .tcard, html.dk .stat, html.dk .sec, html.dk .st-card, html.dk .day, html.dk .rest {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .035));
+  border-color: rgba(255, 255, 255, .12);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .5), inset 0 1px 1px rgba(255, 255, 255, .2), inset 0 -10px 22px rgba(255, 255, 255, .025); }
+.day.istoday, .rest.istoday { box-shadow: 0 0 0 2px var(--accent), 0 0 22px rgba(198, 244, 50, .22), 0 10px 30px rgba(30, 35, 60, .08), inset 0 1px 1px rgba(255, 255, 255, .6); }
+/* нижняя панель и заголовок: настоящее стекло — сквозь них видно содержимое */
+.tabbar, .mini-hd {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, .22));
+  -webkit-backdrop-filter: blur(12px) saturate(210%) brightness(1.06); backdrop-filter: blur(12px) saturate(210%) brightness(1.06); }
+.tabbar { border: 1px solid rgba(255, 255, 255, .75);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .06), inset 0 1px 1px rgba(255, 255, 255, .95), inset 0 -1px 1px rgba(0, 0, 0, .06), inset 0 0 14px rgba(255, 255, 255, .45); }
+html.dk .tabbar, html.dk .mini-hd { background: linear-gradient(180deg, rgba(70, 70, 80, .38), rgba(30, 30, 36, .3));
+  -webkit-backdrop-filter: blur(12px) saturate(190%) brightness(1.1); backdrop-filter: blur(12px) saturate(190%) brightness(1.1); }
+html.dk .tabbar { border-color: rgba(255, 255, 255, .16); box-shadow: 0 16px 44px rgba(0, 0, 0, .55), inset 0 1px 1px rgba(255, 255, 255, .28), inset 0 -1px 1px rgba(0, 0, 0, .3), inset 0 0 14px rgba(255, 255, 255, .06); }
+/* линза: светлый изгиб по верхнему краю, как у толстого стекла */
+.tabbar::after { content: ''; position: absolute; left: 8%; right: 8%; top: 1px; height: 45%; border-radius: 999px 999px 40% 40%; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0)); opacity: .55; }
+html.dk .tabbar::after { opacity: .18; }
+/* капля активной вкладки */
+.tb-pill { background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, .5));
+  box-shadow: inset 0 1px 1px #fff, inset 0 -2px 6px rgba(0, 0, 0, .06), 0 3px 12px rgba(0, 0, 0, .12); }
+html.dk .tb-pill { background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .08));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .35), inset 0 -2px 6px rgba(0, 0, 0, .25), 0 3px 12px rgba(0, 0, 0, .35); }
+/* окна: матовое стекло поверх приложения */
+.panel, .fx { background: linear-gradient(180deg, rgba(246, 246, 250, .72), rgba(236, 236, 242, .82));
+  -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%); }
+html.dk .panel, html.dk .fx { background: linear-gradient(180deg, rgba(22, 22, 26, .7), rgba(8, 8, 10, .82)); }
 </style>
 </head>
 <body>
@@ -1416,7 +1474,7 @@ function showScreen(s) {
   var changed = scr !== s; scr = s;
   el('scr-today').style.display = s === 'today' ? '' : 'none';
   el('scr-plan').style.display = s === 'plan' ? '' : 'none';
-  if (changed) anim(el(s === 'today' ? 'scr-today' : 'scr-plan'), [{ opacity: 0, transform: 'translate3d(' + (navDir === 'R' ? 28 : -28) + 'px,0,0)' }, { opacity: 1, transform: 'none' }], 420, 'cubic-bezier(.16,1,.3,1)');
+  if (changed && !vtBusy) anim(el(s === 'today' ? 'scr-today' : 'scr-plan'), [{ opacity: 0, transform: 'translate3d(' + (navDir === 'R' ? 28 : -28) + 'px,0,0)' }, { opacity: 1, transform: 'none' }], 420, 'cubic-bezier(.16,1,.3,1)');
   lockBody(); raf(onScroll);
 }
 function raf(f) { (window.requestAnimationFrame || function (g) { setTimeout(g, 16); })(f); }
@@ -1437,6 +1495,7 @@ try { window.addEventListener('resize', function () { pillPos = null; movePill()
 function isOpen(id) { var c = el(id).className; return c.indexOf('open') >= 0 && c.indexOf('closing') < 0; }
 function closeP(id) {
   var p = el(id); if (!isOpen(id)) return;
+  if (vtBusy) { p.className = 'panel'; lockBody(); return; } // переход уже анимирует View Transitions
   p.className = 'panel open closing';
   setTimeout(function () { if (p.className.indexOf('closing') >= 0) { p.className = 'panel'; lockBody(); } }, 220);
 }
@@ -1460,7 +1519,22 @@ function lockBody() {
   el('tb-set').className = 'tb' + (se ? ' on' : '');
   movePill();
 }
+var VT = false; try { VT = !!document.startViewTransition; } catch (e) {}
+if (VT) document.documentElement.classList.add('vt');
+var vtBusy = false, vtPending = null;
 function nav(tab) {
+  if (VT && !reduceMo) {
+    if (vtPending !== null) { vtPending = tab; return; }      // переход ещё готовится — откроем последнюю нажатую вкладку
+    if (vtBusy) { navNow(tab); return; }                       // идёт анимация — переключаем сразу
+    vtBusy = true; vtPending = tab;
+    var tr = document.startViewTransition(function () { var t2 = vtPending; vtPending = null; navNow(t2); });
+    var done = function () { vtBusy = false; if (vtPending !== null) { var t3 = vtPending; vtPending = null; navNow(t3); } };
+    if (tr && tr.finished) tr.finished.then(done, done); else done();
+    return;
+  }
+  navNow(tab);
+}
+function navNow(tab) {
   setTab(tab);
   var st = isOpen('spanel'), se = isOpen('panel');
   if (isOpen('skp')) skClose();
@@ -1649,7 +1723,7 @@ function renderMeas() {
 function applyTheme() {
   var dark = cfg.theme === 'dark';
   if (cfg.theme === 'auto') { try { dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {} }
-  document.documentElement.className = dark ? 'dk' : '';
+  var H = document.documentElement; if (dark) H.classList.add('dk'); else H.classList.remove('dk');
   var tc = el('tc'); if (tc) tc.setAttribute('content', dark ? '#0B0B0D' : '#F2F2F5');
   var ids = ['auto', 'light', 'dark'];
   for (var i = 0; i < 3; i++) { var n = el('th-' + ids[i]); if (n) n.className = (cfg.theme === ids[i]) ? 'on' : ''; }
